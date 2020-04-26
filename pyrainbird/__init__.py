@@ -31,7 +31,7 @@ class RainbirdController:
             server, password, retry, retry_sleep, logger
         )
         self.logger = logger
-        self.zones = States("00")
+        self.zones = States()
         self.rain_sensor = None
         self.update_delay = update_delay
         self.zone_update_time = None
@@ -138,7 +138,7 @@ class RainbirdController:
         if _check_delay(self.zone_update_time, self.update_delay):
             response = self._update_irrigation_state(page)
             if not isinstance(response, States):
-                self.zones = States("00")
+                self.zones = States()
                 return None
             else:
                 self.zone_update_time = time.time()
@@ -240,7 +240,7 @@ class RainbirdController:
             ]
         )
         result = self._process_command(
-            lambda resp: States((mask % resp["activeStations"])[:2]),
+            lambda resp: States((mask % resp["activeStations"])[:4]),
             "CurrentStationsActive",
             page,
         )
