@@ -168,7 +168,85 @@ class WaterBudget(object):
         return not __eq__(o)
 
     def __str__(self):
-        return "water budget: program: %d, hi: %02X, lo: %02X" % (
+        return "Water budget: program: %d, hi: %02X" % (
             self.program,
             self.adjust,
+        )
+
+class ZoneSchedule(object):
+    # "zone", "duration", "StartTime1inHoursFromMidnightInMinutesDividedByTen",
+    # "StartTime2inHoursFromMidnightInMinutesDividedByTen","StartTime3inHoursFromMidnightInMinutesDividedByTen",
+    # "StartTime4inHoursFromMidnightInMinutesDividedByTen", "StartTime5inHoursFromMidnightInMinutesDividedByTen",
+    # "StartTime6inHoursFromMidnightInMinutesDividedByTen","PersonalizzatoDispariPariCiclico",
+    # "FrequencyInBinaryStartingFromSunday","DaysCycle", "RemainingDays"
+    def __init__(self, zone, duration, startTime1, startTime2, startTime3, startTime4, startTime5, startTime6, 
+                       scheduleType, frequency, dayCycle, remainingDays):
+        self.zone = zone
+        self.duration = duration
+        self.startTime1 = "" if startTime1 == 144 else str(int((startTime1 * 1) / 6)).zfill(2) + ":" + str((startTime1 * 10) % 60).zfill(2)
+        self.startTime2 = "" if startTime2 == 144 else str(int((startTime2 * 1) / 6)).zfill(2) + ":" + str((startTime2 * 10) % 60).zfill(2)
+        self.startTime3 = "" if startTime3 == 144 else str(int((startTime3 * 1) / 6)).zfill(2) + ":" + str((startTime3 * 10) % 60).zfill(2)
+        self.startTime4 = "" if startTime4 == 144 else str(int((startTime4 * 1) / 6)).zfill(2) + ":" + str((startTime4 * 10) % 60).zfill(2)
+        self.startTime5 = "" if startTime5 == 144 else str(int((startTime5 * 1) / 6)).zfill(2) + ":" + str((startTime5 * 10) % 60).zfill(2)
+        self.startTime6 = "" if startTime6 == 144 else str(int((startTime6 * 1) / 6)).zfill(2) + ":" + str((startTime6 * 10) % 60).zfill(2)
+        self.scheduleType = scheduleType
+        self.frequency = frequency
+        self.isSundayScheduled = True if self.get_bit(frequency, 0) == 1 else False
+        self.isMondayScheduled = True if self.get_bit(frequency, 1) == 1 else False
+        self.isTuesdayScheduled = True if self.get_bit(frequency, 2) == 1 else False
+        self.isWednesdayScheduled = True if self.get_bit(frequency, 3) == 1 else False
+        self.isThursdayScheduled = True if self.get_bit(frequency, 4) == 1 else False
+        self.isFridayScheduled = True if self.get_bit(frequency, 5) == 1 else False
+        self.isSaturdayScheduled = True if self.get_bit(frequency, 6) == 1 else False
+        self.dayCycle = dayCycle
+        self.remainingDays = remainingDays
+
+    def get_bit(self, byteval,idx):
+        return ((byteval&(1<<idx))!=0)
+
+    def __hash__(self):
+        return hash((self.zone, self.duration, self.startTime1, self.startTime2, self.startTime3, self.startTime4, 
+                     self.startTime5, self.startTime6, self.scheduleType, self.frequency, self.dayCycle, self.remainingDays))
+
+    def __eq__(self, o):
+        return (
+            isinstance(o, ZoneSchedule)
+            and self.zone == o.zone
+            and self.duration == o.duration
+            and self.startTime1 == o.startTime1
+            and self.startTime2 == o.startTime2
+            and self.startTime3 == o.startTime3
+            and self.startTime4 == o.startTime4
+            and self.startTime5 == o.startTime5
+            and self.startTime6 == o.startTime6
+            and self.scheduleType == o.scheduleType
+            and self.frequency == o.frequency
+            and self.dayCycle == o.dayCycle
+            and self.remainingDays == o.remainingDays
+        )
+
+    def __ne__(self, o):
+        return not __eq__(o)
+
+    def __str__(self):
+        return "Zone schedule : zone: %d, duration: %d, startTime1: %s, startTime2: %s, startTime3: %s, startTime4: %s, startTime5: %s, startTime6: %s, scheduleType: %d, frequency: %d [Sun: %d, Mon: %d, Tue: %d, Wed: %d, Thu: %d, Fri: %d, Sat: %d], dayCycle: %d, remainingDays: %d" % (
+            self.zone,
+            self.duration,
+            self.startTime1,
+            self.startTime2,
+            self.startTime3,
+            self.startTime4,
+            self.startTime5,
+            self.startTime6,
+            self.scheduleType,
+            self.frequency,
+            self.isSundayScheduled,
+            self.isMondayScheduled,
+            self.isTuesdayScheduled,
+            self.isWednesdayScheduled,
+            self.isThursdayScheduled,
+            self.isFridayScheduled,
+            self.isSaturdayScheduled,            
+            self.dayCycle,
+            self.remainingDays
         )

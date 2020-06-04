@@ -9,6 +9,7 @@ from pyrainbird.data import (
     CommandSupport,
     States,
     WaterBudget,
+    ZoneSchedule,
     _DEFAULT_PAGE,
 )
 from pyrainbird.resources import RAIBIRD_COMMANDS
@@ -35,6 +36,25 @@ class RainbirdController:
         self.update_delay = update_delay
         self.zone_update_time = None
         self.sensor_update_time = None
+
+    def get_schedule(self, controller, zone):
+        self.logger.setLevel(logging.DEBUG)
+        return self._process_command(
+            lambda response: ZoneSchedule(
+                response["zone"],
+                response["duration"],
+                response["startTime1"],
+                response["startTime2"],
+                response["startTime3"],
+                response["startTime4"],
+                response["startTime5"],
+                response["startTime6"],
+                response["scheduleType"],
+                response["frequency"],
+                response["dayCycle"],
+                response["remainingDays"]
+            ), "RetrieveSchedule", controller, zone
+        )
 
     def get_model_and_version(self):
         return self._process_command(
