@@ -38,7 +38,7 @@ class RainbirdController:
         self.sensor_update_time = None
 
     def get_schedule(self, controller, zone):
-        self.logger.setLevel(logging.DEBUG)
+        #self.logger.setLevel(logging.DEBUG)
         return self._process_command(
             lambda response: ZoneSchedule(
                 response["zone"],
